@@ -4,4 +4,5 @@ __pycache__/
 logging.conf
 .pytest_cache
 
-temp.py
+data/**/*
+!data/notes.txt
