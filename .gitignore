@@ -4,5 +4,8 @@ __pycache__/
 logging.conf
 .pytest_cache
 
-data/**/*
+data/*
 !data/notes.txt
+!data/country_covid_records
+data/country_covid_records/*
+!data/country_covid_records/notes.txt
