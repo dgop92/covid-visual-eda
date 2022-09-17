@@ -57,9 +57,13 @@ def save_country_covid_records(
     iso_codes: List[str], repository: CovidRecordMongoRepository
 ):
     for iso_code in iso_codes:
-        logger.info(f"Saving covid records for country {iso_code}")
-        save_country_covid_record(iso_code, repository)
-        logger.info(f"Covid records for country {iso_code} successfully saved")
+        try:
+            logger.info(f"saving covid records for country {iso_code}")
+            save_country_covid_record(iso_code, repository)
+            logger.info(f"covid records for country {iso_code} successfully saved")
+        except Exception as e:
+            logger.error(f"error saving covid records for country {iso_code}")
+            logger.error(e)
 
 
 if __name__ == "__main__":
