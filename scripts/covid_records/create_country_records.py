@@ -63,4 +63,4 @@ if __name__ == "__main__":
     logger.info(f"found {len(all_iso_codes)} iso codes")
 
     logger.info("creating country records")
-    create_country_covid_records(["AFG", "ALB"])
+    create_country_covid_records(all_iso_codes)
