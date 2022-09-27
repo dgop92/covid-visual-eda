@@ -14,5 +14,7 @@ class CountryMongoRepository:
         self.collection = db["countries"]
 
     def bulk_create(self, countries: List[Country]):
-        logger.info("saving all countries in mongo repository")
         self.collection.insert_many([country.dict() for country in countries])
+
+    def delete_all(self):
+        self.collection.delete_many({})

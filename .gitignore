@@ -9,3 +9,5 @@ data/*
 !data/country_covid_records
 data/country_covid_records/*
 !data/country_covid_records/notes.txt
+
+http_tests

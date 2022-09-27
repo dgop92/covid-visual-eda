@@ -10,3 +10,6 @@ class Country(BaseModel):
     population_density: Optional[float]
     population: Optional[float]
     gdp_per_capita: Optional[float]
+    life_expectancy: Optional[float]
+    stringency_index: Optional[float]
+    human_development_index: Optional[float]
