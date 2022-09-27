@@ -44,3 +44,46 @@ class CovidRecordMongoRepository:
 
         result = self.collection.find(filter=filter, projection=project, sort=sort)
         return list(result)
+
+    def get_total_cases_with_country_population(self):
+        result = self.collection.aggregate(
+            [
+                {
+                    "$match": {
+                        "date": {
+                            "$gte": datetime(2020, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
+                            "$lte": datetime(
+                                2020, 12, 31, 0, 0, 0, tzinfo=timezone.utc
+                            ),
+                        }
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$iso_code",
+                        "country_total_cases": {"$sum": "$new_cases"},
+                    }
+                },
+                {"$match": {"country_total_cases": {"$ne": 0}}},
+                {
+                    "$lookup": {
+                        "from": "countries",
+                        "localField": "_id",
+                        "foreignField": "iso_code",
+                        "as": "country",
+                    }
+                },
+                {"$unwind": {"path": "$country"}},
+                {
+                    "$project": {
+                        "iso_code": "$_id",
+                        "total_cases": "$country_total_cases",
+                        "population_density": "$country.population_density",
+                        "population": "$country.population",
+                        "_id": 0,
+                    }
+                },
+                {"$sort": {"total_cases": -1}},
+            ]
+        )
+        return list(result)

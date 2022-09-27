@@ -21,3 +21,9 @@ def get_covid_records(
 ):
     repository = get_covid_record_repository()
     return repository.get_records(iso_code, start, end)
+
+
+@data_viz_router.get("/total-cases-population")
+def get_total_cases_with_country_population():
+    repository = get_covid_record_repository()
+    return repository.get_total_cases_with_country_population()
