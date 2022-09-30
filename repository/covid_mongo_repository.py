@@ -45,15 +45,33 @@ class CovidRecordMongoRepository:
         result = self.collection.find(filter=filter, projection=project, sort=sort)
         return list(result)
 
-    def get_total_cases_with_country_population(self):
+    def get_countries_basic_info(
+        self,
+        start: date,
+        end: date,
+    ):
         result = self.collection.aggregate(
             [
                 {
                     "$match": {
                         "date": {
-                            "$gte": datetime(2020, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
+                            "$gte": datetime(
+                                start.year,
+                                start.month,
+                                start.day,
+                                0,
+                                0,
+                                0,
+                                tzinfo=timezone.utc,
+                            ),
                             "$lte": datetime(
-                                2020, 12, 31, 0, 0, 0, tzinfo=timezone.utc
+                                end.year,
+                                end.month,
+                                end.day,
+                                0,
+                                0,
+                                0,
+                                tzinfo=timezone.utc,
                             ),
                         }
                     }
@@ -80,6 +98,9 @@ class CovidRecordMongoRepository:
                         "total_cases": "$country_total_cases",
                         "population_density": "$country.population_density",
                         "population": "$country.population",
+                        "gdp_per_capita": "$country.gdp_per_capita",
+                        "life_expectancy": "$country.life_expectancy",
+                        "human_development_index": "$country.human_development_index",
                         "_id": 0,
                     }
                 },

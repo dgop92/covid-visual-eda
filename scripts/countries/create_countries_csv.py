@@ -14,7 +14,6 @@ COUNTRY_COLUMNS = [
     "population_density",
     "gdp_per_capita",
     "life_expectancy",
-    "stringency_index",
     "human_development_index",
 ]
 DROP_DUPLICATES_COLUMNS = ["iso_code", "continent", "location"]

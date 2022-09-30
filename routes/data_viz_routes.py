@@ -15,7 +15,7 @@ async def index():
 
 
 @data_viz_router.get("/covid-records/{iso_code}")
-def get_covid_records(
+def covid_records(
     iso_code: str,
     start: Union[date, None] = None,
     end: Union[date, None] = None,
@@ -35,10 +35,20 @@ def is_country_record_valid(data):
     return bool(data["population_density"]) and bool(data["total_cases"])
 
 
-@data_viz_router.get("/total-cases-population")
-def get_total_cases_with_country_population(remove_outliers: bool = False):
+@data_viz_router.get("/countries-basic-info")
+def countries_basic_info(
+    remove_outliers: bool = False,
+    start: Union[date, None] = None,
+    end: Union[date, None] = None,
+):
+    if not start:
+        start = date(2020, 1, 1)
+
+    if not end:
+        end = date(2020, 12, 31)
+
     repository = get_covid_record_repository()
-    results = repository.get_total_cases_with_country_population()
+    results = repository.get_countries_basic_info(start, end)
     if remove_outliers:
         valid_results = [
             result for result in results if is_country_record_valid(result)

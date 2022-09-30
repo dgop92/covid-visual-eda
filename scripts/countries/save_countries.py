@@ -21,9 +21,6 @@ def from_dict_to_country(d: Dict[str, Any]) -> Country:
     )
     gdp_per_capita = None if np.isnan(d["gdp_per_capita"]) else d["gdp_per_capita"]
     life_expectancy = None if np.isnan(d["life_expectancy"]) else d["life_expectancy"]
-    stringency_index = (
-        None if np.isnan(d["stringency_index"]) else d["stringency_index"]
-    )
     human_development_index = (
         None if np.isnan(d["human_development_index"]) else d["human_development_index"]
     )
@@ -36,7 +33,6 @@ def from_dict_to_country(d: Dict[str, Any]) -> Country:
         population_density=population_density,
         gdp_per_capita=gdp_per_capita,
         life_expectancy=life_expectancy,
-        stringency_index=stringency_index,
         human_development_index=human_development_index,
     )
 
