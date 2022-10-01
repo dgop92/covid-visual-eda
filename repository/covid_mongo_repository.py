@@ -80,9 +80,19 @@ class CovidRecordMongoRepository:
                     "$group": {
                         "_id": "$iso_code",
                         "country_total_cases": {"$sum": "$new_cases"},
+                        "country_total_deaths": {"$sum": "$total_deaths"},
                     }
                 },
-                {"$match": {"country_total_cases": {"$ne": 0}}},
+                {
+                    "$match": {
+                        "$or": [
+                            {
+                                "country_total_cases": {"$ne": 0},
+                                "country_total_deaths": {"$ne": 0},
+                            }
+                        ]
+                    }
+                },
                 {
                     "$lookup": {
                         "from": "countries",
@@ -96,6 +106,7 @@ class CovidRecordMongoRepository:
                     "$project": {
                         "iso_code": "$_id",
                         "total_cases": "$country_total_cases",
+                        "total_deaths": "$country_total_deaths",
                         "population_density": "$country.population_density",
                         "population": "$country.population",
                         "gdp_per_capita": "$country.gdp_per_capita",
