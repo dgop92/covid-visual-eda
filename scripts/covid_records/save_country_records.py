@@ -30,6 +30,7 @@ def from_dict_to_covid_record(d: Dict[str, Any]) -> CovidRecord:
         new_cases=d["new_cases"],
         total_deaths=d["total_deaths"],
         new_deaths=d["new_deaths"],
+        stringency_index=d["stringency_index"],
     )
 
 
@@ -44,6 +45,11 @@ def save_country_covid_record(iso_code: str, repository: CovidRecordMongoReposit
     ].fillna(0)
     country_records_df[["total_cases", "total_deaths"]] = (
         country_records_df[["new_cases", "new_deaths"]]
+        .fillna(method="ffill")
+        .fillna(method="bfill")
+    )
+    country_records_df["stringency_index"] = (
+        country_records_df["stringency_index"]
         .fillna(method="ffill")
         .fillna(method="bfill")
     )
@@ -78,5 +84,8 @@ if __name__ == "__main__":
     db = get_mongo_database()
     repository = CovidRecordMongoRepository(db)
     logger.info("connected to mongo database")
+
+    logger.info("delete all covid records")
+    repository.delete_all()
 
     save_country_covid_records(all_iso_codes, repository)

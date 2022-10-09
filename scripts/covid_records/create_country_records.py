@@ -17,6 +17,7 @@ COVID_RECORDS_COLUMNS = [
     "new_cases",
     "total_deaths",
     "new_deaths",
+    "stringency_index",
 ]
 
 

@@ -10,3 +10,4 @@ class CovidRecord(BaseModel):
     new_cases: int
     total_deaths: int
     new_deaths: int
+    stringency_index: float

@@ -18,6 +18,9 @@ class CovidRecordMongoRepository:
         logger.info("saving all covid records in mongo repository")
         self.collection.insert_many([c.dict() for c in covid_records])
 
+    def delete_all(self):
+        self.collection.delete_many({})
+
     def get_records(
         self,
         iso_code: str,
@@ -39,10 +42,80 @@ class CovidRecordMongoRepository:
                 end.year, end.month, end.day, 0, 0, 0, tzinfo=timezone.utc
             )
 
-        project = {"new_cases": 1, "new_deaths": 1, "date": 1, "_id": 0}
+        project = {
+            "stringency_index": 1,
+            "new_cases": 1,
+            "new_deaths": 1,
+            "date": 1,
+            "_id": 0,
+        }
         sort = list({"date": 1}.items())
 
         result = self.collection.find(filter=filter, projection=project, sort=sort)
+        return list(result)
+
+    def get_south_america_stringency_index(
+        self,
+        start: date,
+        end: date,
+    ):
+        result = self.collection.aggregate(
+            [
+                {
+                    "$match": {
+                        "iso_code": {
+                            "$in": [
+                                "ARG",
+                                "BOL",
+                                "BRA",
+                                "CHL",
+                                "COL",
+                                "ECU",
+                                "PRY",
+                                "PER",
+                                "URY",
+                                "VEN",
+                            ]
+                        },
+                        "date": {
+                            "$gte": datetime(
+                                start.year,
+                                start.month,
+                                start.day,
+                                0,
+                                0,
+                                0,
+                                tzinfo=timezone.utc,
+                            ),
+                            "$lte": datetime(
+                                end.year,
+                                end.month,
+                                end.day,
+                                0,
+                                0,
+                                0,
+                                tzinfo=timezone.utc,
+                            ),
+                        },
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$iso_code",
+                        "stringency_indexes": {"$push": "$stringency_index"},
+                        "dates": {"$push": "$date"},
+                    }
+                },
+                {
+                    "$project": {
+                        "iso_code": "$_id",
+                        "_id": 0,
+                        "stringency_indexes": 1,
+                        "dates": 1,
+                    }
+                },
+            ]
+        )
         return list(result)
 
     def get_countries_basic_info(
@@ -112,6 +185,7 @@ class CovidRecordMongoRepository:
                         "gdp_per_capita": "$country.gdp_per_capita",
                         "life_expectancy": "$country.life_expectancy",
                         "human_development_index": "$country.human_development_index",
+                        "continent": "$country.continent",
                         "_id": 0,
                     }
                 },
